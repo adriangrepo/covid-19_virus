@@ -1,0 +1,28 @@
+
+mode:
+  debug: true
+
+log_level: 'DEBUG'
+
+api:
+  versions:
+    current: v1
+    supported:
+    deprecated:
+    unsupported:
+  cors_valid: 'http://localhost:8080'
+
+databases:
+  default:
+    ENGINE: 'mongodb'
+    DRIVER: 'motor'
+    NAME: 'covid19'
+    HOST: '127.0.0.1'
+    PORT: '27017'
+  test:
+      ENGINE: 'mongodb'
+      DRIVER: 'motor'
+      NAME: 'covid19_test'
+      HOST: '127.0.0.1'
+      PORT: '27017'
+  

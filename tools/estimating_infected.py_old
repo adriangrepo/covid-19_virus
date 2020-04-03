@@ -1,0 +1,269 @@
+import sys
+sys.path.append('..')
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from datetime import timedelta, datetime, date
+import os
+from utils import data_paths, load_config
+from pathlib import Path
+
+# # Estimating The Infected Population From Deaths
+# > Estimating the number of infected people by country based on the number of deaths and case fatality rate. 
+# 
+# - comments: true
+# - author: Joao B. Duarte
+# - categories: [growth, compare, interactive, estimation]
+# - hide: false
+# - image: images/covid-estimate-infections.png
+# - permalink: /covid-infected/
+# - toc: true
+
+LOCAL_FILES=True
+
+csse_data = data_paths('tools/csse_data_paths.yml')
+
+if LOCAL_FILES:
+    confirmed_url=csse_data.get("csse_ts_local", {}).get('confirmed', {})
+    deaths_url=csse_data.get("csse_ts_local", {}).get('deaths', {})
+    recovered_url=csse_data.get("csse_ts_local", {}).get('recovered', {})
+    print(f'confirmed_url: {confirmed_url}')
+    pth = Path(os.path.realpath(__file__))
+    par = pth.parent.parent
+    confirmed_url = str(par/confirmed_url)
+    deaths_url = str(par/deaths_url)
+    recovered_url = str(par/recovered_url)
+else:
+    confirmed_url=csse_data.get("csse_ts_global", {}).get('confirmed', {})
+    deaths_url=csse_data.get("csse_ts_global", {}).get('deaths', {})
+    recovered_url=csse_data.get("csse_ts_global", {}).get('recovered', {})
+
+#get country populations
+def country_info():
+    pth = Path(os.path.realpath(__file__))
+    par = pth.parent.parent
+    countryinfo = str(par/'data/countryInfo_csv.csv')
+    df_country_info = pd.read_csv(countryinfo)
+    print(df_country_info.head())
+    return df_country_info
+df_country_info = country_info()
+
+# Get data on deaths D_t
+df_deaths = pd.read_csv(deaths_url, error_bad_lines=False)
+df_deaths = df_deaths.drop(columns=["Lat", "Long"])
+df_deaths = df_deaths.melt(id_vars= ["Province/State", "Country/Region"])
+df_deaths = pd.DataFrame(df_deaths.groupby(['Country/Region', "variable"]).sum())
+df_deaths.reset_index(inplace=True)  
+df_deaths = df_deaths.rename(columns={"Country/Region": "location", "variable": "date", "value": "total_deaths"})
+df_deaths['date'] =pd.to_datetime(df_deaths.date)
+df_deaths = df_deaths.sort_values(by = "date")
+df_deaths.loc[df_deaths.location == "US","location"] = "United States"
+df_deaths.loc[df_deaths.location == "Korea, South","location"] = "South Korea"
+
+csse_countries = df_deaths.location
+country_inf_countries=df_country_info.Country
+csse_countries = [i.lower() for i in csse_countries]
+country_inf_countries = [i.lower() for i in country_inf_countries]
+country_diff = list(set(csse_countries) - set(country_inf_countries))
+print(country_diff)
+
+def fix_country_diff():
+    #Democratic Republic of the Congo = congo (kinshasa)
+    #Republic of the Congo = congo (brazzaville)
+    #Palestinian Territory = west bank and gaza
+    #Ivory Coast = cote d'ivoire
+    #Taiwan = taiwan*
+    #Timor Leste = timor-leste
+    #Myanmar = burma
+    #Vatican = holy see
+    #N/A = diamond princess
+    2
+	
+    df_country_info['Country'] = np.where((df.Country == 'Democratic Republic of the Congo'),'Congo (Kinshasa)',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Republic of the Congo'),'Congo (Brazzaville)',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Palestinian Territory'),'West Bank and Gaza',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Ivory Coast'),"Cote d'Ivoire",df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Taiwan'),'Taiwan*',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Timor Leste'),'Timor-Leste',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Myanmar'),'Burma',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Vatican'),'Holy See',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Democratic Republic of the Congo'),'Congo (Kinshasa)',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Democratic Republic of the Congo'),'Congo (Kinshasa)',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Democratic Republic of the Congo'),'Congo (Kinshasa)',df.Country)
+    df_country_info['Country'] = np.where((df.Country == 'Democratic Republic of the Congo'),'Congo (Kinshasa)',df.Country)
+
+    df_country_info['Country']['Republic of the Congo'] = 'Congo (Brazzaville)'
+    df_country_info['Country']['Palestinian Territory'] = 'West Bank and Gaza'
+    df_country_info['Country']['Ivory Coast'] = "Cote d'Ivoire"
+    df_country_info['Country']['Taiwan'] = 'Taiwan*'
+    df_country_info['Country']['Timor Leste'] = 'Timor-Leste'
+    df_country_info['Country']['Myanmar'] = 'Burma'
+    df_country_info['Country']['Vatican'] = 'Holy See'
+    #one million poluation cutoff
+    df_country=df_country_info.loc[(df_country_info['Population'] >= 1000000)]
+    countries = list(df_country.Country)
+    return countries
+
+countries=fix_country_diff()
+print(f'countries: {countries}')
+
+df_confirmed = pd.read_csv(confirmed_url, error_bad_lines=False)
+df_confirmed = df_confirmed.drop(columns=["Lat", "Long"])
+df_confirmed = df_confirmed.melt(id_vars= ["Province/State", "Country/Region"])
+df_confirmed = pd.DataFrame(df_confirmed.groupby(['Country/Region', "variable"]).sum())
+df_confirmed.reset_index(inplace=True)  
+df_confirmed = df_confirmed.rename(columns={"Country/Region": "location", "variable": "date", "value": "total_cases"})
+df_confirmed['date'] =pd.to_datetime(df_confirmed.date)
+df_confirmed = df_confirmed.sort_values(by = "date")
+df_confirmed.loc[df_confirmed.location == "US","location"] = "United States"
+df_confirmed.loc[df_confirmed.location == "Korea, South","location"] = "South Korea"
+
+df_final = pd.merge(df_deaths,
+                 df_confirmed
+                 )
+
+print(f'location: {df_confirmed.location}')
+
+#for c in df_confirmed.location:
+#    if c not in countries:
+#        print(f'confirmed country: {c}')
+
+
+df_final["CFR"] = df_final["total_deaths"]/df_final["total_cases"]
+df_final["total_infected"] = np.NaN
+df_final = df_final.sort_values(by = ['location', 'date'])
+df_final = df_final.reset_index(drop = True)
+
+print(f'df_final.location: {df_final.location}')
+print(f'df_final: {df_final.head()}')
+
+#countries = ["China", "Italy", "Spain", "France", "United Kingdom", "Germany", 
+#             "Portugal", "United States", "Singapore","South Korea", "Japan", 
+#             "Brazil","Iran"]
+
+for j in countries:
+    print(f'country: {j}')
+    for i in df_final["date"].unique()[0:-8]:
+        #print(f'date: {i}')
+        numer =  df_final.loc[(df_final.date == i + np.timedelta64(8, 'D')) & (df_final.location == j), "total_deaths"].iloc[0]
+        denom = df_final.loc[(df_final.date == i + np.timedelta64(8, 'D')) & (df_final.location == j), "CFR"].iloc[0]
+        #print(f'denom: {denom}')
+        df_final.loc[(df_final.date == i) & (df_final.location == j), "total_infected"] = numer/denom
+
+        
+
+# Estimate growth rate of infected, g        
+df_final['infected_g'] = np.log(df_final['total_infected'])
+df_final['infected_g'] = df_final['infected_g'].diff() 
+
+# Estimate number of infected given g
+today = df_final.date.iloc[-1]
+for j in countries:
+    for i in range(7,-1,-1):
+        df_final.loc[(df_final.location == j) & (df_final.date == today - timedelta(i)), "total_infected"] = df_final.loc[df_final.location == j, "total_infected"].iloc[-i-2]*(1+df_final.loc[df_final.location == j, "infected_g"].aggregate(func = "mean"))
+        
+data_pc = df_final[['location', 'date', 'total_infected']].copy()
+
+#countries = ["China", "Italy", "Spain", "France", "United Kingdom", "Germany", 
+#             "Portugal", "United States", "Singapore","South Korea", "Japan", 
+#             "Brazil","Iran"]
+
+data_countries = []
+data_countries_pc = []
+
+for i in countries:
+    data_pc.loc[data_pc.location == i,"total_infected"] = data_pc.loc[data_pc.location == i,"total_infected"]
+
+# Get each country time series
+filter1 = data_pc["total_infected"] > 1
+for i in countries:
+    filter_country = data_pc["location"]== i
+    data_countries_pc.append(data_pc[filter_country & filter1])      
+
+
+# ## Estimated Infected Population By Country
+# 
+# by days since outbreak
+# 
+# > Tip: Click (Shift+ for multiple) on countries in the legend to filter the visualization. 
+# Plot estimated absolute number of infected
+#plot(data_countries_pc, "line", True)
+
+
+# Lastest Country Estimates  
+label = 'Infected - Total'
+temp = pd.concat([x.copy() for x in data_countries_pc]).loc[lambda x: x.date >= '3/1/2020']
+
+metric_name = f'{label}'
+temp.columns = ['Country', 'Date', metric_name]
+# temp.loc[:, 'month'] = temp.date.dt.strftime('%Y-%m')
+temp.loc[:, "Infected - Total"] = temp.loc[:, "Infected - Total"].round(0)  
+temp.groupby('Country').last()
+
+
+# ## Infected vs. number of confirmed cases
+# > Allows you to compare how countries have been tracking the true number of infected people. 
+# The smaller deviation from the dashed line (45 degree line) the better job at tracking the true number of infected people.
+
+# > Tip: Click (Shift+ for multiple) on countries in the legend to filter the visualization. 
+
+# Plot it using Altair
+data_pc = df_final.copy()
+
+countries = ["Italy", "Spain", "France", "United Kingdom", "Germany", 
+             "Portugal", "United States", "Singapore","South Korea", "Japan", 
+             "Brazil","Iran"]
+data_countries = []
+data_countries_pc = []
+
+for i in countries:
+    data_pc.loc[data_pc.location == i,"total_infected"] = data_pc.loc[data_pc.location == i,"total_infected"]
+    data_pc.loc[data_pc.location == i,"total_cases"] = data_pc.loc[data_pc.location == i,"total_cases"]
+    # get each country time series
+filter1 = data_pc["total_infected"] > 1
+for i in countries:
+    filter_country = data_pc["location"]== i
+    data_countries_pc.append(data_pc[filter_country & filter1])
+
+
+#plot(data_countries_pc, "scatter", True)
+
+
+# ## Methodology
+
+# We argue that the number of infected in the past can be infered using today's number of deaths and average fatality rate from confirmed cases in the following way:
+# 
+# {% raw %}
+# $$ I_{t-j} = \frac{D_t}{{CFR}_t}$$
+# {% endraw %}
+# 
+# where {% raw %}$I_t${% endraw %} = number of infected, {% raw %}$D_t${% endraw %} = number of deaths, and {% raw %}${CFR}_t ${% endraw %} = case fatality rate = {% raw %}$\frac{D}{C}${% endraw %}. The {% raw %}$j${% endraw %} depends on the average number of days that covid patients die after having the first symptoms.
+
+# **Assumption 1**: The case fatality rate is a good proxy for the fatality rate of the infected population
+# 
+
+# Then, in order to estimate the current number of infected {% raw %}$I_t${% endraw %} we need to estimate its growth rate from {% raw %}$t-j${% endraw %} to {% raw %}$t${% endraw %}.
+# 
+# {% raw %}
+# $$I_t = (1+\hat{g})^j I_{t-j}$$
+# {% endraw %}
+
+# **Assumption 2**: The growth rate of infected $\hat{g}$ is an unbiased estimate of $g$ .
+# 
+# For now we estimate $g$ using the average growth rate since having the first infected person.
+
+# **Assumption 3**: It takes on average 8 days to day after having the first symptoms.
+
+# This analysis was conducted by [Joao B. Duarte](https://www.jbduarte.com). Relevant sources are listed below: 
+# 
+# 
+# 1. [2019 Novel Coronavirus COVID-19 (2019-nCoV) Data Repository by Johns Hopkins CSSE](https://systems.jhu.edu/research/public-health/ncov/) [GitHub repository](https://github.com/CSSEGISandData/COVID-19). 
+# 
+# 2. [Feenstra, Robert C., Robert Inklaar and Marcel P. Timmer (2015), "The Next Generation of the Penn World Table" American Economic Review, 105(10), 3150-3182](https://www.rug.nl/ggdc/productivity/pwt/related-research)
+# 
+
+
+
+
+

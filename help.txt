@@ -1,0 +1,7 @@
+#to find what is using port
+sudo lsof -i:8000
+#venv
+starlette_py37
+#start mongod
+sudo systemctl start mongod
+sudo systemctl status mongod
