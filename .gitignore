@@ -14,11 +14,12 @@ __pycache__/
 .python-version
 
 # Environments
-.env
-
+.envs/
 
 # mypy
 .mypy_cache/
 
-#ignore data na dcontents
+#ignore data
 data/
+
+

@@ -11,19 +11,17 @@ import json
 import logging
 from services.server.utils import setup_logging
 from pandas.core.common import maybe_box_datetimelike
-from utils import data_paths, load_config
+from data_urls import csse_ts_local, csse_ts_global
 
 logger = logging.getLogger(__name__)
 
 INITIAL_LOAD=True
+USE_LOCAL_DATA=True
 
-CONF = load_config()
-setup_logging('data_loader', log_level=CONF['log_level'])
+setup_logging('data_loader')
 
-PORT= int(CONF.get("databases", {}).get("default", {}).get("PORT"))
-client = MongoClient('localhost', PORT)
-db_name=CONF.get("databases", {}).get("default", {}).get("NAME")
-db = client[db_name]
+client = MongoClient(PYMONGO_SETTINGS.get('host'), PYMONGO_SETTINGS.get('port'))
+db = client[MONGODB_SETTINGS.get('db')]
 
 def download_data(url):
     s=requests.get(url).content
@@ -64,8 +62,13 @@ def load_ts_total_infected_estimate_data(csv_data, collection_name, drop_prev=Fa
         logger.debug(e)
 
 csse_data = data_paths('tools/csse_data_paths.yml')
+
+
 for csse_case_type in ['confirmed','deaths','recovered']:
-    url=csse_data.get("csse_ts_global", {}).get(csse_case_type, {})
+    if USE_LOCAL_DATA:
+        url=csse_ts_local.get(csse_case_type, {})
+    else:
+        url=csse_ts_global.get(csse_case_type, {})
     load_data(url, 'csse_'+csse_case_type, drop_prev=True)
 
 #estimated infected over time per country

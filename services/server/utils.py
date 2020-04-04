@@ -1,15 +1,9 @@
 
 import logging
+from config.server_config import LOG_LEVEL, LOGGING_CONFIG
 
-def setup_logging(log_file_name, log_level):
-    if log_level == 'DEBUG':
-        level=logging.DEBUG
-    elif log_level == 'INFO':
-        level=logging.INFO
-    elif log_level == 'WARNING':
-        level=logging.WARNING
-    elif log_level == 'ERROR':
-        level=logging.ERROR
-    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-    handlers = [logging.FileHandler(f'../../logs/{log_file_name}.log'), logging.StreamHandler()]
-    logging.basicConfig(level = level, format = format, handlers = handlers)
+def setup_logging(log_file=LOGGING_FILE, log_level=LOG_LEVEL):
+    config = LOGGING_CONFIG
+    config['handlers']['rotate_file']['filename'] = log_file
+    config['loggers']['level'] = log_level
+    logging.config.dictConfig(config)

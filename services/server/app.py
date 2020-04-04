@@ -9,9 +9,10 @@ from dashboard.nb_covid19_growth import growth_workflow
 import os
 from bson.objectid import ObjectId
 from datetime import datetime
-from config.config import DB, CONF
+from db import DB
 from utils import setup_logging
 import logging
+from config.server_config import DEBUG_MODE, API_CORS_VALID, ASGI_HOST, ASGI_PORT
 
 
 '''
@@ -23,20 +24,20 @@ routes = [
 '''
 
 logger = logging.getLogger(__name__)
-setup_logging('app', log_level=CONF["log_level"])
+setup_logging()
 
-app = Starlette(debug=CONF["mode"].get("debug"))
+app = Starlette(debug=DEBUG_MODE)
 
 # A list of origins that should be permitted to make cross-origin requests
 app.add_middleware(CORSMiddleware,
-    allow_origins=[CONF["api"].get("cors_valid")],
+    allow_origins=[API_CORS_VALID],
 )
 
 def validate_object_id(id_: str):
     try:
         _id = ObjectId(id_)
     except Exception:
-        if CONF["mode"].get("debug", False):
+        if DEBUG_MODE == False:
             logging.warning("Invalid Object ID")
         raise HTTPException(status_code=400)
     return _id
@@ -77,4 +78,4 @@ async def test(request):
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host=ASGI_HOST, port=ASGI_PORT)
