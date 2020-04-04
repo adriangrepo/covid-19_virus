@@ -1,6 +1,6 @@
 # covid-19_virus
 
-Ananlysis of covid-19 worldwide infection datasets.
+Analysis of covid-19 worldwide infection datasets.
 
 Data sourced from:
 
