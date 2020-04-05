@@ -98,7 +98,7 @@ assert MONGODB_SETTINGS is not None
 
 
 API_VERSION = 'v1'
-API_CORS_VALID = get('API_CORS_VALID', 'http://localhost:8080')
+API_CORS_VALID = os.getenv('API_CORS_VALID') or 'http://localhost:8080'
 
-ASGI_HOST=get('ASGI_HOST', 'localhost')
-ASGI_PORT=get('ASGI_PORT', 8000)
+ASGI_HOST=os.getenv('ASGI_HOST') or 'localhost'
+ASGI_PORT=os.getenv('ASGI_PORT') or 8000
