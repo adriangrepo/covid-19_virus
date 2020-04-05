@@ -16,4 +16,5 @@ uvloop
 websockets
 pyyaml
 pymongo
+jinja2
 

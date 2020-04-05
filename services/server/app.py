@@ -3,6 +3,7 @@ from starlette.applications import Starlette
 from starlette.routing import Route
 from starlette.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
+from starlette.templating import Jinja2Templates
 import uvicorn
 from dashboard.nb_mortality_rate import run_mcmc_model, fig_test
 from dashboard.nb_covid19_growth import growth_workflow
@@ -26,6 +27,8 @@ routes = [
 logger = logging.getLogger(__name__)
 setup_logging()
 
+templates = Jinja2Templates(directory='templates')
+
 app = Starlette(debug=DEBUG_MODE)
 
 # A list of origins that should be permitted to make cross-origin requests
@@ -43,6 +46,12 @@ def validate_object_id(id_: str):
     return _id
 
 @app.route('/')
+async def homepage(request):
+    template = "index.html"
+    context = {"request": request}
+    return templates.TemplateResponse(template, context)    
+
+@app.route('/hello')
 async def homepage(request):
     # time.sleep(10)
     return JSONResponse({'hello': 'backend response'})
