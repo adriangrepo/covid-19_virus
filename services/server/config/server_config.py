@@ -59,37 +59,37 @@ PYMONGO_SETTINGS=None
 if RUN_MODE == PRODUCTION:
     # db local to server
     PYMONGO_SETTINGS = {
-        'host': get('DB_PROD_HOST', '127.0.0.1'),
-        'port': int(get('DB_PROD_PORT', '27017')),
-        'username': get('DB_PROD_USERNAME', 'prod_user'),
-        'password': get('DB_PROD_PASSWORD', 'prod_password'),
+        'host': os.environ.get('DB_PROD_HOST', '127.0.0.1'),
+        'port': int(os.environ.get('DB_PROD_PORT', '27017')),
+        'username': os.environ.get('DB_PROD_USERNAME', 'prod_user'),
+        'password': os.environ.get('DB_PROD_PASSWORD', 'prod_password'),
     }
-    MONGODB_SETTINGS = {'db': get('DB_PROD_NAME', 'prod_db')}
+    MONGODB_SETTINGS = {'db': os.environ.get('DB_PROD_NAME', 'prod_db')}
 elif RUN_MODE == REMOTE_DEV:
     PYMONGO_SETTINGS = {
-        'host': get('DB_REMOTE_DEV_HOST', '127.0.0.1'),
-        'port': int(get('DB_REMOTE_DEV_PORT', '27017')),
-        'username': get('DB_REMOTE_DEV_USERNAME', 'remote_dev_user'),
-        'password': get('DB_REMOTE_DEV_PASSWORD', 'remote_dev_password'),
+        'host': os.environ.get('DB_REMOTE_DEV_HOST', '127.0.0.1'),
+        'port': int(os.environ.get('DB_REMOTE_DEV_PORT', '27017')),
+        'username': os.environ.get('DB_REMOTE_DEV_USERNAME', 'remote_dev_user'),
+        'password': os.environ.get('DB_REMOTE_DEV_PASSWORD', 'remote_dev_password'),
     }
-    MONGODB_SETTINGS = {'db': get('DB_REMOTE_DEV_NAME', 'remote_dev_db')}
+    MONGODB_SETTINGS = {'db': os.environ.get('DB_REMOTE_DEV_NAME', 'remote_dev_db')}
 elif RUN_MODE == REMOTE_TEST:
     PYMONGO_SETTINGS = {
-        'host': get('DB_REMOTE_TEST_HOST', '127.0.0.1'),
-        'port': int(get('DB_REMOTE_TEST_PORT', '27017')),
-        'username': get('DB_REMOTE_TEST_USERNAME', 'remote_test_user'),
-        'password': get('DB_REMOTE_TEST_PASSWORD', 'remote_test_password'),
+        'host': os.environ.get('DB_REMOTE_TEST_HOST', '127.0.0.1'),
+        'port': int(os.environ.get('DB_REMOTE_TEST_PORT', '27017')),
+        'username': os.environ.get('DB_REMOTE_TEST_USERNAME', 'remote_test_user'),
+        'password': os.environ.get('DB_REMOTE_TEST_PASSWORD', 'remote_test_password'),
     }
-    MONGODB_SETTINGS = {'db': get('DB_REMOTE_TEST_NAME', 'remote_test_db')}
+    MONGODB_SETTINGS = {'db': os.environ.get('DB_REMOTE_TEST_NAME', 'remote_test_db')}
 elif RUN_MODE == LOCAL:
     # local dev db
     PYMONGO_SETTINGS = {
-        'host': get('DB_LOCAL_HOST', '127.0.0.1'),
-        'port': int(get('DB_LOCAL_PORT', '27017')),
-        'username': get('DB_LOCAL_USERNAME', 'local_user'),
-        'password': get('DB_LOCAL_PASSWORD', 'local_password'),
+        'host': os.environ.get('DB_LOCAL_HOST', '127.0.0.1'),
+        'port': int(os.environ.get('DB_LOCAL_PORT', '27017')),
+        'username': os.environ.get('DB_LOCAL_USERNAME', 'local_user'),
+        'password': os.environ.get('DB_LOCAL_PASSWORD', 'local_password'),
     }
-    MONGODB_SETTINGS = {'db': get('DB_LOCAL_NAME', 'local_db')}
+    MONGODB_SETTINGS = {'db': os.environ.get('DB_LOCAL_NAME', 'local_db')}
 else:
     raise ValueError(f'RUN_MODE: {RUN_MODE} not valid')
 
@@ -101,12 +101,7 @@ API_VERSION = 'v1'
 API_CORS_VALID = get('API_CORS_VALID', 'http://localhost:8080')
 
 ASGI_HOST=get('ASGI_HOST', 'localhost')
-ASGI_PORT=get('ASGI_PORT', 8000)
-
-# logging
-LOGGING_FILE = os.path.join(BASE_DIR, 'logs/app.log')
-LOGGING_CONFIG = {
-    'version': 1,
+ASGI_PORT=get('ASGI_PORT', 8000)http://172.104.172.236/
     'disable_existing_loggers': False,
     'formatters': {
         'standard': {
