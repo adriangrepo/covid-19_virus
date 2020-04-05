@@ -1,6 +1,6 @@
 
 import logging
-from config.server_config import LOGGING_CONFIG, LOG_LEVEL, LOGGING_FILE
+from config.server_config import LOG_LEVEL, LOGGING_FILE
 
 def setup_rotating_logging(log_file=LOGGING_FILE, log_level=LOG_LEVEL):
     confg = LOGGING_CONFIG

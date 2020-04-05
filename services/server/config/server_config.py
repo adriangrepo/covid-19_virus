@@ -101,37 +101,4 @@ API_VERSION = 'v1'
 API_CORS_VALID = get('API_CORS_VALID', 'http://localhost:8080')
 
 ASGI_HOST=get('ASGI_HOST', 'localhost')
-ASGI_PORT=get('ASGI_PORT', 8000)http://172.104.172.236/
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s %(levelname)s %(name)s.%(funcName)s(): %(message)s '
-                '(%(filename)s:%(lineno)d) PID:%(process)d ',
-            'datefmt': "%Y-%m-%d %H:%M:%S",
-        }
-    },
-    'handlers': {
-        'console': {
-            'level': LOG_LEVEL,
-            'formatter': 'standard',
-            'class': 'logging.StreamHandler',
-        },
-        'rotate_file': {
-            'level': LOG_LEVEL,
-            'formatter': 'standard',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOGGING_FILE,
-            'encoding': 'utf8',
-            #10MB
-            'maxBytes': 10485760,
-            'backupCount': 1,
-        }
-    },
-    'loggers': {
-        '': {
-            'handlers': ['console', 'rotate_file'],
-            'level': LOG_LEVEL,
-        }
-    }
-}
-
+ASGI_PORT=get('ASGI_PORT', 8000)
