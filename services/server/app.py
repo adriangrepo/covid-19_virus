@@ -38,13 +38,6 @@ app.add_middleware(CORSMiddleware,
 
 logger.info(f'app started, debug mode: {DEBUG_MODE}')
 
-def get_client_ip(request):
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
 
 def validate_object_id(id_: str):
     try:
@@ -57,7 +50,7 @@ def validate_object_id(id_: str):
 
 @app.route('/')
 async def homepage(request):
-    logger.info(f'route / ip: {get_client_ip(request)}')
+    logger.debug('route / ')
     template = "index.html"
     context = {"request": request}
     return templates.TemplateResponse(template, context)    
