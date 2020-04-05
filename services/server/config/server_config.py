@@ -6,7 +6,7 @@ def get(key, default):
     """
     Used for getting default configs for dev but forces environment only configs in production.
     """
-    value = os.environ.get(key)
+    value = os.getenv(key)
     if not value and RUN_MODE == PRODUCTION:
         raise Exception('env config "{0}" is missing'.format(key))
     return value or default
@@ -16,7 +16,7 @@ PRODUCTION = 'production'
 REMOTE_DEV = 'development'
 REMOTE_TEST = 'test'
 #default to production, when running locally set to LOCAL and run . local.env
-RUN_MODE = os.environ.get('RUN_MODE', PRODUCTION)
+RUN_MODE = os.getenv('RUN_MODE') or PRODUCTION
 print('Run mode: {0}'.format(RUN_MODE))
 
 # default to be overriden
@@ -59,37 +59,37 @@ PYMONGO_SETTINGS=None
 if RUN_MODE == PRODUCTION:
     # db local to server
     PYMONGO_SETTINGS = {
-        'host': os.environ.get('DB_PROD_HOST', '127.0.0.1'),
-        'port': int(os.environ.get('DB_PROD_PORT', '27017')),
-        'username': os.environ.get('DB_PROD_USERNAME', 'prod_user'),
-        'password': os.environ.get('DB_PROD_PASSWORD', 'prod_password'),
+        'host': os.getenv('DB_PROD_HOST') or '127.0.0.1',
+        'port': int(os.getenv('DB_PROD_PORT') or '27017'),
+        'username': os.getenv('DB_PROD_USERNAME') or 'prod_user',
+        'password': os.getenv('DB_PROD_PASSWORD') or 'prod_password',
     }
-    MONGODB_SETTINGS = {'db': os.environ.get('DB_PROD_NAME', 'prod_db')}
+    MONGODB_SETTINGS = {'db': os.getenv('DB_PROD_NAME') or 'prod_db'}
 elif RUN_MODE == REMOTE_DEV:
     PYMONGO_SETTINGS = {
-        'host': os.environ.get('DB_REMOTE_DEV_HOST', '127.0.0.1'),
-        'port': int(os.environ.get('DB_REMOTE_DEV_PORT', '27017')),
-        'username': os.environ.get('DB_REMOTE_DEV_USERNAME', 'remote_dev_user'),
-        'password': os.environ.get('DB_REMOTE_DEV_PASSWORD', 'remote_dev_password'),
+        'host': os.getenv('DB_REMOTE_DEV_HOST') or '127.0.0.1',
+        'port': int(os.getenv('DB_REMOTE_DEV_PORT') or '27017'),
+        'username': os.getenv('DB_REMOTE_DEV_USERNAME') or 'remote_dev_user',
+        'password': os.getenv('DB_REMOTE_DEV_PASSWORD') or 'remote_dev_password',
     }
-    MONGODB_SETTINGS = {'db': os.environ.get('DB_REMOTE_DEV_NAME', 'remote_dev_db')}
+    MONGODB_SETTINGS = {'db': os.getenv('DB_REMOTE_DEV_NAME') or 'remote_dev_db'}
 elif RUN_MODE == REMOTE_TEST:
     PYMONGO_SETTINGS = {
-        'host': os.environ.get('DB_REMOTE_TEST_HOST', '127.0.0.1'),
-        'port': int(os.environ.get('DB_REMOTE_TEST_PORT', '27017')),
-        'username': os.environ.get('DB_REMOTE_TEST_USERNAME', 'remote_test_user'),
-        'password': os.environ.get('DB_REMOTE_TEST_PASSWORD', 'remote_test_password'),
+        'host': os.getenv('DB_REMOTE_TEST_HOST') or '127.0.0.1',
+        'port': int(os.getenv('DB_REMOTE_TEST_PORT') or '27017'),
+        'username': os.getenv('DB_REMOTE_TEST_USERNAME') or 'remote_test_user',
+        'password': os.getenv('DB_REMOTE_TEST_PASSWORD') or 'remote_test_password',
     }
-    MONGODB_SETTINGS = {'db': os.environ.get('DB_REMOTE_TEST_NAME', 'remote_test_db')}
+    MONGODB_SETTINGS = {'db': os.getenv('DB_REMOTE_TEST_NAME') or 'remote_test_db'}
 elif RUN_MODE == LOCAL:
     # local dev db
     PYMONGO_SETTINGS = {
-        'host': os.environ.get('DB_LOCAL_HOST', '127.0.0.1'),
-        'port': int(os.environ.get('DB_LOCAL_PORT', '27017')),
-        'username': os.environ.get('DB_LOCAL_USERNAME', 'local_user'),
-        'password': os.environ.get('DB_LOCAL_PASSWORD', 'local_password'),
+        'host': os.getenv('DB_LOCAL_HOST') or '127.0.0.1',
+        'port': int(os.getenv('DB_LOCAL_PORT') or '27017'),
+        'username': os.getenv('DB_LOCAL_USERNAME') or 'local_user',
+        'password': os.getenv('DB_LOCAL_PASSWORD') or 'local_password',
     }
-    MONGODB_SETTINGS = {'db': os.environ.get('DB_LOCAL_NAME', 'local_db')}
+    MONGODB_SETTINGS = {'db': os.getenv('DB_LOCAL_NAME') or 'local_db'}
 else:
     raise ValueError(f'RUN_MODE: {RUN_MODE} not valid')
 
