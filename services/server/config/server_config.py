@@ -102,3 +102,5 @@ API_CORS_VALID = os.getenv('API_CORS_VALID') or 'http://localhost:8080'
 
 ASGI_HOST=os.getenv('ASGI_HOST') or 'localhost'
 ASGI_PORT=os.getenv('ASGI_PORT') or 8000
+
+LOGGING_FILE = os.path.join(BASE_DIR, 'logs')+'/app.log'
